@@ -4,21 +4,25 @@
 #
 # SPDX-License-Identifier: (Apache-2.0 OR MIT)
 
+import os
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import llnl.util.tty as tty
 
 import spack
 import spack.environment as ev
+from package_manager import system_package_manager
 
 
-description = "manipulate external package config files"
-section = "system"
-level = "short"
-
+description = 'manipulate external package config files'
+section = 'system'
+level = 'short'
 subcommands = [
+    'check',
     ['status', 'st'],
 ]
+subcommand_functions = {}
 
 
 def external_status_setup_parser(subparser):
@@ -33,10 +37,11 @@ def external_status(args):
         env.concretize()
 
         def _tree_to_display(spec):
-            return spec.tree(
-                recurse_dependencies=True,
-                status_fn=spack.spec.Spec.install_status,
-                hashlen=8, hashes=True, show_external=True)
+            return spec.tree(recurse_dependencies=True,
+                             status_fn=spack.spec.Spec.install_status,
+                             hashlen=8,
+                             hashes=True,
+                             show_external=True)
 
         for user_spec, concrete_spec in env.concretized_specs():
             tty.msg('Concretized {0}'.format(user_spec))
@@ -46,13 +51,20 @@ def external_status(args):
         tty.msg('No active environment')
 
 
-#: Dictionary mapping subcommand names and aliases to functions
-subcommand_functions = {}
+def external_check_setup_parser(subparser):
+    """check the system package manager for the presence of external packages"""
+    pass
+
+
+def external_check(args):
+    """spack external check"""
+    system_package_manager()
 
 
 def setup_parser(subparser):
     """spack external"""
-    sp = subparser.add_subparsers(metavar='SUBCOMMAND', dest='external_command')
+    sp = subparser.add_subparsers(metavar='SUBCOMMAND',
+                                  dest='external_command')
 
     for name in subcommands:
         if isinstance(name, (list, tuple)):
@@ -70,8 +82,9 @@ def setup_parser(subparser):
         setup_parser_cmd_name = 'external_%s_setup_parser' % name
         setup_parser_cmd = globals()[setup_parser_cmd_name]
 
-        subsubparser = sp.add_parser(
-            name, aliases=aliases, help=setup_parser_cmd.__doc__)
+        subsubparser = sp.add_parser(name,
+                                     aliases=aliases,
+                                     help=setup_parser_cmd.__doc__)
         setup_parser_cmd(subsubparser)
 
 
