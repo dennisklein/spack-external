@@ -6,4 +6,5 @@
 
 import os
 
-package_managers_path = os.path.join(os.path.dirname(__file__), 'package_managers')
+package_managers_path = os.path.join(os.path.dirname(__file__),
+                                     'package_managers')

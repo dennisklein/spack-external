@@ -35,6 +35,21 @@ class PackageManager(object):
         """
         raise NotImplementedError('abstract method called')
 
+    def __init__(self, exe, version):
+        self._exe = exe
+        self._version = version
+
+    def __repr__(self):
+        return '%s %s' % (self.exe, self.version)
+
+    @property
+    def exe(self):
+        return self._exe
+
+    @property
+    def version(self):
+        return self._version
+
 
 @memoized
 def all_package_managers():

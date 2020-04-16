@@ -58,7 +58,7 @@ def external_check_setup_parser(subparser):
 
 def external_check(args):
     """spack external check"""
-    system_package_manager()
+    tty.msg(system_package_manager())
 
 
 def setup_parser(subparser):
